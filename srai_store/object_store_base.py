@@ -1,20 +1,11 @@
 import logging
 from abc import abstractmethod
-from typing import (
-    Any,
-    Dict,
-    Generic,
-    Iterator,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-)
+from typing import Any, Dict, Generic, Iterator, List, Optional, Sequence, Tuple, TypeVar
 
-from fastapi import HTTPException
 from langchain_core.stores import BaseStore
 from pydantic import BaseModel
+
+from srai_store.exceptions import KeyNotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +33,7 @@ class ObjectStoreBase(Generic[T], BaseStore[str, T]):
     def get_raise(self, key: str) -> T:
         value = self.mget([key])[0]
         if value is None:
-            raise HTTPException(status_code=404, detail=f"Key {key} not found in store")
+            raise KeyNotFoundError(key)
         return value
 
     def count(
@@ -85,4 +76,6 @@ class ObjectStoreBase(Generic[T], BaseStore[str, T]):
 
     @abstractmethod
     def mvalidate(self, keys: List[str]) -> int:
+        pass
+        pass
         pass

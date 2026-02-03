@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from typing import Iterator, List, Optional, Sequence
 
-from fastapi import HTTPException
 from langchain_core.stores import BaseStore
 
 
@@ -24,7 +23,7 @@ class BytesStoreBase(BaseStore[str, bytes]):
     def get_raise(self, key: str) -> bytes:
         value = self.mget([key])[0]
         if value is None:
-            raise HTTPException(status_code=404, detail=f"Key {key} not found in store")
+            raise ValueError(f"Key {key} not found in store")
         return value
 
     @abstractmethod

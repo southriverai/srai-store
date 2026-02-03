@@ -2,10 +2,10 @@ import re
 import zlib
 from typing import Iterator, List, Optional, Sequence, Tuple
 
-from langchain.storage.exceptions import InvalidKeyException
 from sqlalchemy.engine.base import Engine
 
 from srai_store.bytes_store_base import BytesStoreBase
+from srai_store.exceptions import KeyValidationError
 
 
 class BytesStorePostgres(BytesStoreBase):
@@ -25,7 +25,7 @@ class BytesStorePostgres(BytesStoreBase):
     def _validate_key(self, key: str) -> None:
         """Validate the key to ensure it has valid characters."""
         if not re.match(r"^[a-zA-Z0-9_.\-/]+$", key):
-            raise InvalidKeyException(f"Invalid characters in key: {key}")
+            raise KeyValidationError(key, "Invalid characters in key")
 
     def _should_use_bulk_request(self, keys: Sequence) -> bool:
         return len(keys) >= 5

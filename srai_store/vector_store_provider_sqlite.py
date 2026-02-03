@@ -1,6 +1,6 @@
 from langchain_core.documents import Document
-from mailau_server.components.embedding_model_base import EmbeddingModelBase
 
+from srai_store.embedding_model_base import EmbeddingModelBase
 from srai_store.store_provider_sqlite import StoreProviderSqlite
 from srai_store.vector_store_base import VectorStoreBase
 from srai_store.vector_store_object import VectorStoreObject

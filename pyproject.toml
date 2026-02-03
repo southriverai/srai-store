@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "srai-store"
-version = "0.1.4"
+version = "0.1.5"
 description = ""
 authors = ["Jaap Oosterbroek <jaap.oosterbroek@gmail.com>"]
 readme = "README.md"
@@ -47,6 +47,7 @@ ignore = [
     "PLR0913", # Too many arguments
     "PLR0912", # Too many branches
     "PLR0915", # Too many statements
+    "PLR2004", # Magic value used in comparison
     "ARG002", #unused arguments
     "TRY003" # long message in except block
 ]

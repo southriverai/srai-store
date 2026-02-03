@@ -7,7 +7,7 @@ from langchain_core.messages import BaseMessage
 from langchain_core.outputs import ChatResult
 from pydantic import Field
 
-from mailau_server.store.dict_store_base import DictStoreBase
+from srai_store.dict_store_base import DictStoreBase
 
 
 class ChatModelWrapper(BaseChatModel):

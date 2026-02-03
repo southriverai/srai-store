@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Dict, Iterator, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
 from pymongo import MongoClient
 from pymongo.command_cursor import CommandCursor as PymongoCommandCursor
@@ -39,12 +39,20 @@ class DictStoreMongo(DictStoreBase):
         print(f"Counting documents in {self.collection_name}")
         return self.collection.count_documents({})
 
+    def _to_mongo_query(self, query: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert our query format to Mongo's (prepend document. to fields)."""
+        mongo_query: Dict[str, Any] = {}
+        for key, value in query.items():
+            mongo_key = "document." + key
+            mongo_query[mongo_key] = value
+        return mongo_query
+
     def count_query(
         self,
-        query: Dict[str, str],
+        query: Dict[str, Any],
     ) -> int:
         print(f"Counting documents in {self.collection_name} with query {query}")
-        return self.collection.count_documents(query)
+        return self.collection.count_documents(self._to_mongo_query(query))
 
     def mget(self, keys: Sequence[str]) -> list[Optional[dict]]:
         if not keys:
@@ -94,16 +102,14 @@ class DictStoreMongo(DictStoreBase):
 
     def query(
         self,
-        query: Dict[str, str],
-        order_by: List[Tuple[str, bool]] = [],
+        query: Dict[str, Any],
+        order_by: Optional[List[Tuple[str, bool]]] = None,
         limit: int = 0,
         offset: int = 0,
     ) -> List[dict]:
-        query_mod = {}
-        for key in query:
-            query_mod["document." + key] = query[key]
+        query_mod = self._to_mongo_query(query)
         order_mod = []
-        for field, asc in order_by:
+        for field, asc in order_by or []:
             order_mod.append(("document." + field, 1 if asc else -1))
 
         cursor = self.collection.find(query_mod)

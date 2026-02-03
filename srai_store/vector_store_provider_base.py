@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from mailau_server.components.embedding_model_base import EmbeddingModelBase
-
+from srai_store.embedding_model_base import EmbeddingModelBase
 from srai_store.vector_store_base import VectorStoreBase
 
 

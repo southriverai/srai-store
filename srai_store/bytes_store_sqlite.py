@@ -3,7 +3,7 @@ import sqlite3
 import zlib
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator, List, Optional, Sequence, Tuple
+from typing import Dict, Iterator, List, Optional, Sequence, Tuple
 
 from srai_store.bytes_store_base import BytesStoreBase
 
@@ -153,3 +153,18 @@ class BytesStoreSqlite(BytesStoreBase):
             cursor.execute("SELECT value FROM store ORDER BY RANDOM() LIMIT ?", (count,))
             rows = cursor.fetchall()
             return [self._decompress(row[0]) for row in rows]
+
+    def query(
+        self,
+        query: Dict[str, str],
+        order_by: List[Tuple[str, bool]] = [],
+        limit: int = 0,
+        offset: int = 0,
+    ) -> List[bytes]:
+        raise NotImplementedError("Not implemented")
+
+    def count_query(
+        self,
+        query: Dict[str, str],
+    ) -> int:
+        raise NotImplementedError("Not implemented")

@@ -5,12 +5,13 @@ os.environ["LANGCHAIN_TRACING_V2"] = "false"
 os.environ["LANGCHAIN_ENDPOINT"] = ""
 os.environ["LANGCHAIN_API_KEY"] = ""
 
-from mailau_server.mailau_container import MailauContainer
+from srai_store.embedding_model_base import EmbeddingModelBase
+from srai_store.vector_store_provider_pinecone import VectorStoreProviderPinecone
 
 
 def test_vector_store_provider_pinecone():
-    mailau_container = MailauContainer.initialize()
-    vector_store = mailau_container.vector_store_provider.get_vector_store("test")
+    vector_store_provider = VectorStoreProviderPinecone(database_name="test", api_key="test", cloud="aws", region="us-east-1")
+    vector_store = vector_store_provider.get_vector_store("test", embeddings_model=EmbeddingModelBase(name="test", dimension=128))
     vector_store.add_texts(["Hello, world!"])
     vector_store.add_texts(["Hello, world! 2"])
     result = vector_store.similarity_search_with_score("Hello, world!")

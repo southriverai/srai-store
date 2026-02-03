@@ -1,8 +1,8 @@
 from typing import Optional
 
-from mailau_server.components.embedding_model_base import EmbeddingModelBase
 from pinecone import Pinecone
 
+from srai_store.embedding_model_base import EmbeddingModelBase
 from srai_store.vector_store_base import VectorStoreBase
 from srai_store.vector_store_pinecone import VectorStorePinecone
 from srai_store.vector_store_provider_base import VectorStoreProviderBase

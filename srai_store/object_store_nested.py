@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Iterator, List, Optional, Sequence, Tuple, Type, TypeVar, Union
+from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple, Type, TypeVar, Union
 
 from pydantic import BaseModel
 
@@ -52,8 +52,8 @@ class ObjectStoreNested(ObjectStoreBase[T]):
 
     def query(
         self,
-        query: Dict[str, str],
-        order_by: List[Tuple[str, bool]] = [],
+        query: Dict[str, Any],
+        order_by: Optional[List[Tuple[str, bool]]] = None,
         limit: int = 0,
         offset: int = 0,
     ) -> List[T]:
@@ -65,10 +65,9 @@ class ObjectStoreNested(ObjectStoreBase[T]):
 
     def count_query(
         self,
-        query: Dict[str, str],
+        query: Dict[str, Any],
     ) -> int:
-        list_dict = self.store.query(query)
-        return len(list_dict)
+        return self.store.count_query(query)
 
     def mvalidate(self, keys: List[str]) -> int:
         dict_entries = self.store.mget(keys)

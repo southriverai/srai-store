@@ -1,8 +1,9 @@
 from abc import abstractmethod
-from typing import Dict, Iterator, List, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple
 
-from fastapi import HTTPException
 from langchain_core.stores import BaseStore
+
+from srai_store.exceptions import KeyNotFoundError
 
 
 class DictStoreBase(BaseStore[str, dict]):
@@ -23,7 +24,7 @@ class DictStoreBase(BaseStore[str, dict]):
     def get_raise(self, key: str) -> dict:
         dict = self.mget([key])[0]
         if dict is None:
-            raise HTTPException(status_code=404, detail=f"Key {key} not found in store")
+            raise KeyNotFoundError(key)
         return dict
 
     def get(self, key: str) -> Optional[dict]:
@@ -47,8 +48,8 @@ class DictStoreBase(BaseStore[str, dict]):
     @abstractmethod
     def query(
         self,
-        query: Dict[str, str],
-        order_by: List[Tuple[str, bool]] = [],
+        query: Dict[str, Any],
+        order_by: Optional[List[Tuple[str, bool]]] = None,
         limit: int = 0,
         offset: int = 0,
     ) -> List[dict]:
@@ -57,6 +58,6 @@ class DictStoreBase(BaseStore[str, dict]):
     @abstractmethod
     def count_query(
         self,
-        query: Dict[str, str],
+        query: Dict[str, Any],
     ) -> int:
         pass
