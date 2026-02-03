@@ -55,6 +55,17 @@ def update_pyproject_version(pyproject_path: Path, new_version: str) -> None:
     pyproject_path.write_text(content)
 
 
+def has_changes() -> bool:
+    """Return True if there are uncommitted changes (staged or unstaged)."""
+    result = subprocess.run(
+        ["git", "status", "--porcelain"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return bool(result.stdout.strip())
+
+
 def run(cmd: list[str], check: bool = True, env: dict | None = None) -> subprocess.CompletedProcess:
     """Run a command and return the result."""
     run_env = {**os.environ, **env} if env else None
@@ -103,11 +114,18 @@ def main() -> None:
     commit_message = args.message or f"Release {tag}"
 
     if args.dry_run:
+        if not has_changes():
+            print("No changes to commit. Would do nothing.")
+            return
         print(f"Would bump version: {current} -> {new_version}")
         print(f"Would create commit: {commit_message}")
         print(f"Would create tag: {tag}")
         if not args.no_publish:
             print("Would publish to PyPI")
+        return
+
+    if not has_changes():
+        print("No changes to commit. Nothing to do.")
         return
 
     # Bump version in pyproject.toml
@@ -125,6 +143,10 @@ def main() -> None:
     # Create tag
     run(["git", "tag", tag])
     print(f"Created tag: {tag}")
+
+    # Push commits and tags
+    run(["git", "push", "--follow-tags"])
+    print("Pushed to remote")
 
     if args.no_publish:
         print("Skipping PyPI publish (--no-publish)")

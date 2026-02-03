@@ -2,11 +2,14 @@
 """
 Test the whole server"""
 
-from mailau_server.mailau_container import MailauContainer
-from langchain_core.stores import BaseStore
 import asyncio
 import json
 import uuid
+
+from langchain_core.stores import BaseStore
+
+from srai_store.store_provider_mongo import StoreProviderMongo
+
 
 async def clear_store(test_store: BaseStore[str, dict]):
     print("Clearing store")
@@ -15,6 +18,7 @@ async def clear_store(test_store: BaseStore[str, dict]):
         ids.append(key)
     test_store.mdelete(ids)
     print(f"Cleared {len(ids)} keys")
+
 
 async def test_dict_store_mongo(test_store: BaseStore[str, dict]):
     document_id = str(uuid.uuid4())
@@ -28,13 +32,12 @@ async def test_dict_store_mongo(test_store: BaseStore[str, dict]):
         raise Exception("Document not found")
     # test yield keys
     keys = []
-    print(f"Yielding keys")
+    print("Yielding keys")
     for key in test_store.yield_keys():
         print(key)
         keys.append(key)
     if document_id not in keys:
         raise Exception("Document not found in yield keys")
-
 
     # test delete
     print(f"Deleting document: {document_id}")
@@ -44,9 +47,8 @@ async def test_dict_store_mongo(test_store: BaseStore[str, dict]):
 
 
 if __name__ == "__main__":
-    mailau_container = MailauContainer.initialize()
-    url = "www.investinbansko.com"
-    test_store = mailau_container.store_provider.get_dict_store("test_store")
+    store_provider = StoreProviderMongo("mongodb://localhost:27017", initialize=True)
+    test_store = store_provider.get_dict_store("test_store")
     asyncio.run(clear_store(test_store))
     asyncio.run(test_dict_store_mongo(test_store))
     asyncio.run(clear_store(test_store))

@@ -1,5 +1,5 @@
 import logging
-import os
+from pathlib import Path
 from typing import Type, TypeVar
 
 from langchain_core.stores import BaseStore
@@ -18,16 +18,18 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class StoreProviderSqlite(StoreProviderBase):
-    def __init__(self, database_name: str, path_dir_database: str) -> None:
+    def __init__(self, database_name: str, path_dir_database: Path) -> None:
         super().__init__(database_name)
         self.path_dir_database = path_dir_database
 
     def _get_bytes_store(self, collection_name: str) -> BytesStoreBase:
-        path_file_database = os.path.join(self.path_dir_database, self.database_name, collection_name + ".db")
+        Path(self.path_dir_database).mkdir(parents=True, exist_ok=True)
+        path_file_database = Path(self.path_dir_database) / self.database_name / (collection_name + ".db")
         return BytesStoreSqlite(collection_name, path_file_database)
 
     def _get_dict_store(self, collection_name: str) -> DictStoreBase:
-        path_file_database = os.path.join(self.path_dir_database, self.database_name, collection_name + ".db")
+        Path(self.path_dir_database).mkdir(parents=True, exist_ok=True)
+        path_file_database = Path(self.path_dir_database) / self.database_name / (collection_name + ".db")
         return DictStoreSqlite(collection_name, path_file_database)
 
     def _get_object_store(self, collection_name: str, model_class: Type[T]) -> BaseStore[str, T]:

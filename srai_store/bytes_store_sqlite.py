@@ -1,24 +1,22 @@
-import os
 import re
 import sqlite3
 import zlib
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Iterator, List, Optional, Sequence, Tuple
-
-from langchain.storage.exceptions import InvalidKeyException
 
 from srai_store.bytes_store_base import BytesStoreBase
 
 
 class BytesStoreSqlite(BytesStoreBase):
-    def __init__(self, collection_name: str, path_file_database: str) -> None:
+    def __init__(self, collection_name: str, path_file_database: Path) -> None:
         super().__init__(collection_name)
         self.path_file_database = path_file_database
         # Ensure parent directory exists
-        abs_path = os.path.abspath(self.path_file_database)
-        parent_dir = os.path.dirname(abs_path)
+        abs_path = self.path_file_database.absolute()
+        parent_dir = abs_path.parent
         if parent_dir:
-            os.makedirs(parent_dir, exist_ok=True)
+            parent_dir.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
     def _init_db(self) -> None:
@@ -54,7 +52,7 @@ class BytesStoreSqlite(BytesStoreBase):
     def _validate_key(self, key: str) -> None:
         """Validate the key to ensure it has valid characters."""
         if not re.match(r"^[a-zA-Z0-9_.\-/]+$", key):
-            raise InvalidKeyException(f"Invalid characters in key: {key}")
+            raise ValueError(f"Invalid characters in key: {key}")
 
     def mget(self, keys: Sequence[str]) -> List[Optional[bytes]]:
         """Get the values associated with the given keys.
