@@ -7,7 +7,7 @@ import json
 import uuid
 
 from srai_store.dict_store_base import DictStoreBase
-from srai_store.store_provider_sqlite import StoreProviderSqlite
+from srai_store.store_provider_duckdb import StoreProviderDuckdb
 
 
 async def clear_store(test_store: DictStoreBase):
@@ -93,7 +93,7 @@ async def test_dict_store(test_store: DictStoreBase):
 
 
 if __name__ == "__main__":
-    store_provider = StoreProviderSqlite("test_store", path_dir_database="test_store")
+    store_provider = StoreProviderDuckdb("test_store", path_dir_database="data/test_store_duckdb")
     test_store = store_provider.get_dict_store("test_store")
     asyncio.run(clear_store(test_store))
     asyncio.run(test_dict_store(test_store))
