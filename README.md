@@ -20,3 +20,5 @@ pip install srai-store
 
 
 ### Dev notes
+
+python commit_and_publish.py to move to pipy
